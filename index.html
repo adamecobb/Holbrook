@@ -510,8 +510,16 @@ if(isTouch){
 const pad=()=>small()?[20,20]:[40,40];
 addEventListener('resize',()=>map.invalidateSize());
 L.control.zoom({position:'bottomright'}).addTo(map);
-const light=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'© OpenStreetMap contributors © CARTO'}).addTo(map);
-const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Imagery © Esri, Maxar, Earthstar Geographics'});
+// Esri tiles: free, no API key, no account
+const esri=(path,o)=>L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/'+path+'/MapServer/tile/{z}/{y}/{x}',Object.assign({maxZoom:19},o));
+const light=L.layerGroup([
+  esri('Canvas/World_Light_Gray_Base',{maxNativeZoom:16,attribution:'Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors'}),
+  esri('Canvas/World_Light_Gray_Reference',{maxNativeZoom:16})
+]).addTo(map);
+const sat=L.layerGroup([
+  esri('World_Imagery',{attribution:'Imagery © Esri, Maxar, Earthstar Geographics'}),
+  esri('Reference/World_Boundaries_and_Places',{maxNativeZoom:19})
+]);
 map.on('click',()=>map.scrollWheelZoom.enable()); map.on('mouseout',()=>map.scrollWheelZoom.disable());
 
 // Approximate Innis Arden boundary: Puget Sound (W), NW Richmond Beach Rd (N), 8th Ave NW (E), Boeing Creek (S)
